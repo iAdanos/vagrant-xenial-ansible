@@ -56,18 +56,5 @@ Vagrant.configure("2") do |config|
       hbase_standalone:   true,
     }
   end
-  
-#  config.vm.provision :ansible do |ansible|
-#    ansible.playbook = "prepare.yml"
-#    ansible.sudo = true
-#    ansible.groups = {
-#      "vagrant" => ["ansible-snp"],
-#    }
-#    ansible.extra_vars = {
-#      ansible_ssh_user: 'vagrant',
-#      hbase_standalone:   true,
-#    }
-#  end
-
 
 end
