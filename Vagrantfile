@@ -1,49 +1,32 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Deafult config
-defaultBox = "debian/jessie64"
-defaultBoxUser = "vagrant"
-defaultBoxName = "ansible-snp"
-defaultAnsible = "ansible/"
-defaultPlaybook = "vagrant.yaml"
+box = "ubuntu/xenial64"
+boxUser = "ubuntu"
+boxName = "ansible-snp"
+boxAnsible = "ansible/"
+boxPlaybook = "vagrant.yaml"
 
-# Apply user config
-box = ENV['BOX'] || defaultBox
-boxName = ENV['BOX_NAME'] || defaultBoxName
-boxUser = ENV['BOX_USER'] || defaultBoxUser
-boxAnsible = ENV['BOX_ANSIBLE'] || defaultAnsible
-boxPlaybook = ENV['BOX_PLAYBOOK'] || defaultPlaybook
-
-# Setup environement
 ENV['ANSIBLE_ROLES_PATH'] = boxAnsible+"roles"
 
-# Setup user name for Ubuntu Linux
-if ENV['OS'] == "Ubuntu" || ENV['BOX'] == "ubuntu/xenial64"
-  box = "ubuntu/xenial64"
-  boxUser = "ubuntu"
-end
-
-# Vagrant box configuration itself
 Vagrant.configure("2") do |config|
- 
+
   config.vm.box = box
 
-  config.vm.define boxName do |vagrantvm|
-    vagrantvm.vm.hostname = boxName+".vagrant"
-    vagrantvm.vm.network "private_network", type: "dhcp"
-    vagrantvm.vm.provider :virtualbox do |v|
+  config.vm.define boxName do |xenialtest|
+    xenialtest.vm.hostname = boxName+".vagrant"
+    xenialtest.vm.network "private_network", type: "dhcp"
+    xenialtest.vm.provider :virtualbox do |v|
       v.name = boxName
     end
   end
 
-  if ENV['OS'] == "Ubuntu" || ENV['BOX'] == "ubuntu/xenial64"
-    config.vm.provision "shell", inline: <<-SHELL
-    apt update
-    apt install -y python
+  # Install python2.7 to make Ansible work
+  config.vm.provision "shell", inline: <<-SHELL
+    if [[ -z $(which python) ]]; then
+        apt update && apt install -y python
+    fi
   SHELL
-  end
-
 
   config.vm.provision :ansible do |ansible|
     ansible.playbook = boxAnsible+"/"+boxPlaybook
