@@ -4,12 +4,9 @@
 box = "ubuntu/xenial64"
 boxName = "ansible-snp"
 
-boxAnsible = "./ansible/"
-boxAnsibleConfig = "ansible.cfg"
-boxPlaybook = "vagrant.yaml"
-boxInventory = "inventory"
-
-ENV['ANSIBLE_ROLES_PATH'] = boxAnsible+"roles"
+boxAnsible = "ansible/ansible.cfg"
+boxInventory = "ansible/inventory"
+boxPlaybook = "ansible/vagrant.yaml"
 
 Vagrant.configure("2") do |config|
 
@@ -31,9 +28,9 @@ Vagrant.configure("2") do |config|
   SHELL
 
   config.vm.provision :ansible do |ansible|
-    ansible.config_file = boxAnsible+boxAnsibleConfig
-    ansible.inventory_path = boxAnsible+boxInventory
-    ansible.playbook = boxAnsible+boxPlaybook
+    ansible.config_file = boxAnsible
+    ansible.inventory_path = boxInventory
+    ansible.playbook = boxPlaybook
   end
 
 end
