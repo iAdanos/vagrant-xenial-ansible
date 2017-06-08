@@ -2,10 +2,12 @@
 # vi: set ft=ruby :
 
 box = "ubuntu/xenial64"
-boxUser = "ubuntu"
 boxName = "ansible-snp"
-boxAnsible = "ansible/"
+
+boxAnsible = "./ansible/"
+boxAnsibleConfig = "ansible.cfg"
 boxPlaybook = "vagrant.yaml"
+boxInventory = "inventory"
 
 ENV['ANSIBLE_ROLES_PATH'] = boxAnsible+"roles"
 
@@ -14,7 +16,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = box
 
   config.vm.define boxName do |xenialtest|
-    xenialtest.vm.hostname = boxName+".vagrant"
+    xenialtest.vm.hostname = boxName
     xenialtest.vm.network "private_network", type: "dhcp"
     xenialtest.vm.provider :virtualbox do |v|
       v.name = boxName
@@ -29,15 +31,9 @@ Vagrant.configure("2") do |config|
   SHELL
 
   config.vm.provision :ansible do |ansible|
-    ansible.playbook = boxAnsible+"/"+boxPlaybook
-    ansible.sudo = true
-    ansible.groups = {
-      "vagrant" => [boxName],
-    }
-    ansible.extra_vars = {
-      ansible_ssh_user: boxUser,
-      hbase_standalone:   true,
-    }
+    ansible.config_file = boxAnsible+boxAnsibleConfig
+    ansible.inventory_path = boxAnsible+boxInventory
+    ansible.playbook = boxAnsible+boxPlaybook
   end
 
 end
